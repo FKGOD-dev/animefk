@@ -5,28 +5,19 @@ import dynamic from "next/dynamic";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    setLoaded(true);
     if (typeof window !== "undefined") {
-      // 🔹 Se usa un timeout para asegurar la correcta lectura del token
-      setTimeout(() => {
-        setIsLoggedIn(!!localStorage.getItem("token"));
-      }, 100);
+      setIsLoggedIn(!!localStorage.getItem("token"));
     }
-  }, []);
+  }, [router.pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
-    router.push("/login"); // 🔹 Redirige al login tras cerrar sesión
+    router.push("/"); // Redirige al inicio
   };
-
-  if (!loaded) {
-    return null;
-  }
 
   return (
     <nav className="bg-blue-600 text-white p-4 flex justify-between items-center">
@@ -60,5 +51,4 @@ const Navbar = () => {
   );
 };
 
-// 🔹 Evita errores de hidratación deshabilitando SSR en el Navbar
 export default dynamic(() => Promise.resolve(Navbar), { ssr: false });
